@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agente Superpoderes IA</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0b1020;
+      color: white;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 25px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #111936, #18265a);
+      border-bottom: 1px solid #34406d;
+    }
+
+    header h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #b8c3e6;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .box {
+      background: #121a32;
+      border: 1px solid #29365f;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .box h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #3a4772;
+      background: #080d1c;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #6c7cff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #5865f2, #8b5cf6);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .powers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .power {
+      background: #0b1125;
+      border: 1px solid #2c3964;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .power .icon {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .power h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .power p {
+      color: #aab5d6;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    #resultado {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #080d1c;
+      border-radius: 10px;
+      color: #cbd5ff;
+      line-height: 1.6;
+    }
+
+    .status {
+      text-align: center;
+      color: #9ca9d8;
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #7885ad;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>⚡ Agente Superpoderes IA</h1>
+    <p>Seu painel de inteligência artificial</p>
+  </header>
+
+  <main class="container">
+
+    <section class="box">
+      <h2>🤖 O que você quer que a IA faça?</h2>
+
+      <textarea id="comando"
+        placeholder="Digite uma tarefa...&#10;&#10;Exemplo: Crie uma ideia de negócio online e monte um plano para executá-la."></textarea>
+
+      <button onclick="executar()">
+        🚀 EXECUTAR COM SUPERPODERES
+      </button>
+
+      <div id="resultado"></div>
+    </section>
+
+    <section class="box">
+      <h2>🦸 Superpoderes disponíveis</h2>
+
+      <div class="powers">
+
+        <div class="power">
+          <div class="icon">🧠</div>
+          <h3>Raciocínio</h3>
+          <p>Analisa problemas e cria soluções.</p>
+        </div>
+
+        <div class="power">
+          <div class="icon">🔎</div>
+          <h3>Pesquisa</h3>
+          <p>Busca e organiza informações.</p>
+        </div>
+
+        <div class="power">
+          <div class="icon">✍️</div>
+          <h3>Criação</h3>
+          <p>Cria textos, ideias e conteúdos.</p>
+        </div>
+
+        <div class="power">
+          <div class="icon">⚙️</div>
+          <h3>Automação</h3>
+          <p>Transforma tarefas repetitivas em processos.</p>
+        </div>
+
+        <div class="power">
+          <div class="icon">📊</div>
+          <h3>Análise</h3>
+          <p>Organiza dados e ajuda nas decisões.</p>
+        </div>
+
+        <div class="power">
+          <div class="icon">🚀</div>
+          <h3>Execução</h3>
+          <p>Prepara ações para colocar as ideias em prática.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="status">
+      🟢 Sistema preparado
+    </div>
+
+  </main>
+
+  <footer>
+    Agente Superpoderes IA — versão inicial
+  </footer>
+
+  <script>
+    function executar() {
+      const comando = document.getElementById("comando").value.trim();
+      const resultado = document.getElementById("resultado");
+
+      if (!comando) {
+        resultado.style.display = "block";
+        resultado.innerHTML = "⚠️ Digite primeiro o que você quer que o agente faça.";
+        return;
+      }
+
+      resultado.style.display = "block";
+
+      resultado.innerHTML =
+        "<strong>🚀 Comando recebido!</strong><br><br>" +
+        "Sua solicitação foi registrada:<br><br>" +
+        "<em>" + escapar(comando) + "</em><br><br>" +
+        "⚙️ O próximo passo será conectar este painel ao motor de IA para executar a tarefa automaticamente.";
+    }
+
+    function escapar(texto) {
+      return texto
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+
+</body>
+</html>
