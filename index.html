@@ -3,83 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agente Superpoderes IA</title>
+  <title>Agente Superpowers IA</title>
 
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
     }
 
     body {
+      margin: 0;
+      font-family: Arial, sans-serif;
       background: #0b1020;
-      color: white;
+      color: #fff;
       min-height: 100vh;
     }
 
     header {
+      background: linear-gradient(135deg, #111936, #18265a);
       padding: 25px 20px;
       text-align: center;
-      background: linear-gradient(135deg, #111936, #18265a);
-      border-bottom: 1px solid #34406d;
+      border-bottom: 1px solid #29345f;
     }
 
     header h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
+      margin: 0;
+      font-size: 28px;
     }
 
     header p {
-      color: #b8c3e6;
-      font-size: 15px;
+      margin: 8px 0 0;
+      color: #aeb9df;
     }
 
     .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 25px 18px;
+      width: 92%;
+      max-width: 900px;
+      margin: 30px auto;
     }
 
-    .box {
+    .card {
       background: #121a32;
-      border: 1px solid #29365f;
-      border-radius: 16px;
-      padding: 20px;
+      border: 1px solid #29345f;
+      border-radius: 18px;
+      padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
-    .box h2 {
-      margin-bottom: 15px;
-      font-size: 20px;
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #b9c4e8;
+      font-weight: bold;
     }
 
+    input,
     textarea {
       width: 100%;
-      min-height: 130px;
-      resize: vertical;
-      padding: 15px;
-      border-radius: 12px;
-      border: 1px solid #3a4772;
-      background: #080d1c;
+      background: #080d1b;
       color: white;
-      font-size: 16px;
+      border: 1px solid #34416f;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
       outline: none;
     }
 
+    input:focus,
     textarea:focus {
-      border-color: #6c7cff;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
     }
 
     button {
       width: 100%;
       margin-top: 15px;
-      padding: 16px;
-      border: none;
+      padding: 15px;
+      border: 0;
       border-radius: 12px;
-      background: linear-gradient(135deg, #5865f2, #8b5cf6);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       font-size: 17px;
       font-weight: bold;
@@ -87,206 +93,242 @@
     }
 
     button:hover {
-      opacity: 0.9;
+      opacity: .9;
     }
 
-    .powers {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
+    button:disabled {
+      opacity: .5;
+      cursor: wait;
     }
 
-    .power {
-      background: #0b1125;
-      border: 1px solid #2c3964;
-      padding: 18px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .power .icon {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
-
-    .power h3 {
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-
-    .power p {
-      color: #aab5d6;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    #resultado {
-      display: none;
+    #status {
       margin-top: 15px;
-      padding: 15px;
-      background: #080d1c;
+      padding: 12px;
       border-radius: 10px;
-      color: #cbd5ff;
+      background: #0b1226;
+      color: #aeb9df;
+      display: none;
+    }
+
+    #resposta {
+      white-space: pre-wrap;
       line-height: 1.6;
-      white-space: normal;
-      word-wrap: break-word;
+      color: #e8ecff;
+      min-height: 50px;
     }
 
-    .status {
-      text-align: center;
-      color: #9ca9d8;
-      font-size: 13px;
-      margin-top: 15px;
+    .online {
+      color: #63e6be;
+      font-weight: bold;
     }
 
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #7885ad;
+    .aviso {
       font-size: 13px;
+      color: #8f9bc4;
+      margin-top: 8px;
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>⚡ Agente Superpoderes IA</h1>
-    <p>Seu painel de inteligência artificial</p>
-  </header>
+<header>
+  <h1>🚀 Agente Superpowers IA</h1>
+  <p>Seu agente inteligente para executar tarefas com IA</p>
+</header>
 
-  <main class="container">
+<div class="container">
 
-    <section class="box">
-      <h2>🤖 O que você quer que a IA faça?</h2>
+  <div class="card">
 
-      <textarea
-        id="comando"
-        placeholder="Digite uma tarefa...&#10;&#10;Exemplo: Crie uma ideia de negócio online e monte um plano para executá-la."
-      ></textarea>
+    <label for="backendUrl">
+      🌐 URL do servidor
+    </label>
 
-      <button onclick="executar()">
-        🚀 EXECUTAR COM SUPERPODERES
-      </button>
+    <input
+      id="backendUrl"
+      type="url"
+      placeholder="https://seu-servidor.up.railway.app"
+    >
 
-      <div id="resultado"></div>
-    </section>
-
-    <section class="box">
-      <h2>🦸 Superpoderes disponíveis</h2>
-
-      <div class="powers">
-
-        <div class="power">
-          <div class="icon">🧠</div>
-          <h3>Raciocínio</h3>
-          <p>Analisa problemas e cria soluções.</p>
-        </div>
-
-        <div class="power">
-          <div class="icon">🔎</div>
-          <h3>Pesquisa</h3>
-          <p>Busca e organiza informações.</p>
-        </div>
-
-        <div class="power">
-          <div class="icon">✍️</div>
-          <h3>Criação</h3>
-          <p>Cria textos, ideias e conteúdos.</p>
-        </div>
-
-        <div class="power">
-          <div class="icon">⚙️</div>
-          <h3>Automação</h3>
-          <p>Transforma tarefas repetitivas em processos.</p>
-        </div>
-
-        <div class="power">
-          <div class="icon">📊</div>
-          <h3>Análise</h3>
-          <p>Organiza dados e ajuda nas decisões.</p>
-        </div>
-
-        <div class="power">
-          <div class="icon">🚀</div>
-          <h3>Execução</h3>
-          <p>Prepara ações para colocar as ideias em prática.</p>
-        </div>
-
-      </div>
-    </section>
-
-    <div class="status">
-      🟢 Sistema preparado
+    <div class="aviso">
+      Essa é a URL pública do servidor onde o Gemini está conectado.
+      Sua chave Gemini NÃO fica neste site.
     </div>
 
-  </main>
+  </div>
 
-  <footer>
-    Agente Superpoderes IA — versão inicial
-  </footer>
+  <div class="card">
 
-  <script>
-    async function executar() {
-      const comando = document.getElementById("comando").value.trim();
-      const resultado = document.getElementById("resultado");
+    <label for="comando">
+      🤖 O que você quer que o Agente Superpowers faça?
+    </label>
 
-      if (!comando) {
-        resultado.style.display = "block";
-        resultado.innerHTML =
-          "⚠️ Digite primeiro o que você quer que o agente faça.";
-        return;
-      }
+    <textarea
+      id="comando"
+      placeholder="Exemplo: Crie uma página web completa para uma loja de roupas..."
+    ></textarea>
 
-      resultado.style.display = "block";
-      resultado.innerHTML =
-        "🤖 <strong>Agente pensando...</strong><br><br>" +
-        "⏳ Processando seu comando...";
+    <button id="btnExecutar" onclick="executarAgente()">
+      ⚡ EXECUTAR COMANDO
+    </button>
+
+    <div id="status"></div>
+
+  </div>
+
+  <div class="card">
+
+    <h2>🧠 Resposta da IA</h2>
+
+    <div id="resposta">
+      Aguardando seu comando...
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  const backendInput = document.getElementById("backendUrl");
+  const comandoInput = document.getElementById("comando");
+  const resposta = document.getElementById("resposta");
+  const status = document.getElementById("status");
+  const botao = document.getElementById("btnExecutar");
+
+  // Recupera automaticamente a URL salva anteriormente
+  const urlSalva = localStorage.getItem("superpowers_backend_url");
+
+  if (urlSalva) {
+    backendInput.value = urlSalva;
+  }
+
+  async function executarAgente() {
+
+    let backendUrl = backendInput.value.trim();
+    const comando = comandoInput.value.trim();
+
+    if (!backendUrl) {
+      alert("Cole primeiro a URL pública do seu servidor.");
+      backendInput.focus();
+      return;
+    }
+
+    if (!comando) {
+      alert("Digite o que você quer que o Agente Superpowers faça.");
+      comandoInput.focus();
+      return;
+    }
+
+    // Remove barra final
+    backendUrl = backendUrl.replace(/\/+$/, "");
+
+    // Salva a URL no celular
+    localStorage.setItem("superpowers_backend_url", backendUrl);
+
+    botao.disabled = true;
+    botao.textContent = "⏳ PROCESSANDO...";
+
+    status.style.display = "block";
+    status.textContent = "🔄 Enviando seu comando para o Agente Superpowers...";
+
+    resposta.textContent = "";
+
+    try {
+
+      let resultado;
+
+      /*
+        Primeiro tenta /generate.
+        Caso o servidor utilize /api/generate,
+        tenta automaticamente a segunda opção.
+      */
 
       try {
-        const resposta = await fetch(
-          "URL_DO_BACKEND/api/agent",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              command: comando
-            })
-          }
-        );
 
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(
-            dados.error || "Erro ao executar o agente."
-          );
-        }
-
-        resultado.innerHTML =
-          "<strong>🤖 Resposta do Agente:</strong><br><br>" +
-          escapar(dados.response).replace(/\n/g, "<br>");
+        resultado = await fetch(backendUrl + "/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: comando,
+            message: comando
+          })
+        });
 
       } catch (erro) {
-        resultado.innerHTML =
-          "❌ <strong>Erro ao conectar com o agente.</strong><br><br>" +
-          escapar(erro.message) +
-          "<br><br>" +
-          "⚙️ O backend ainda precisa ser conectado.";
+
+        resultado = await fetch(backendUrl + "/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: comando,
+            message: comando
+          })
+        });
+
       }
+
+      const texto = await resultado.text();
+
+      let dados;
+
+      try {
+        dados = JSON.parse(texto);
+      } catch {
+        dados = {
+          resposta: texto
+        };
+      }
+
+      if (!resultado.ok) {
+        throw new Error(
+          dados.error ||
+          dados.message ||
+          "O servidor retornou um erro."
+        );
+      }
+
+      const respostaIA =
+        dados.resposta ||
+        dados.response ||
+        dados.text ||
+        dados.message ||
+        dados.output ||
+        texto;
+
+      resposta.textContent = respostaIA;
+
+      status.textContent =
+        "🟢 Comando executado com sucesso!";
+
+      status.className = "online";
+
+    } catch (erro) {
+
+      console.error(erro);
+
+      status.textContent =
+        "🔴 Não foi possível conectar ao servidor.";
+
+      resposta.textContent =
+        "Erro: " + erro.message +
+        "\n\nVerifique se a URL do servidor está correta e se o deploy está Online.";
+
+    } finally {
+
+      botao.disabled = false;
+      botao.textContent = "⚡ EXECUTAR COMANDO";
+
     }
 
-    function escapar(texto) {
-      return String(texto)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-  </script>
+  }
+
+</script>
 
 </body>
 </html>
