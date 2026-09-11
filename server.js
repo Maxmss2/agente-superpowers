@@ -7,14 +7,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
-// A chave permanece SOMENTE no Railway
+// A chave do Gemini fica SOMENTE no Railway.
+// NÃO coloque a chave neste código.
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
-// Teste do servidor
+// Rota de teste
 app.get("/", (req, res) => {
   res.json({
     status: "online",
@@ -23,10 +24,10 @@ app.get("/", (req, res) => {
   });
 });
 
-// Endpoint do agente
-app.post("/api/gemini", async (req, res) => {
+// Função principal do agente
+async function executarAgente(req, res) {
   try {
-    const { prompt } = req.body;
+    const { prompt } = req.body || {};
 
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({
@@ -52,7 +53,7 @@ app.post("/api/gemini", async (req, res) => {
     if (!text) {
       return res.status(500).json({
         success: false,
-        error: "O Gemini não retornou texto."
+        error: "O Gemini não retornou uma resposta."
       });
     }
 
@@ -69,7 +70,11 @@ app.post("/api/gemini", async (req, res) => {
       error: error?.message || "Erro desconhecido ao comunicar com o Gemini."
     });
   }
-});
+}
+
+// Aceita as DUAS rotas para evitar erro de comunicação
+app.post("/api/chat", executarAgente);
+app.post("/api/gemini", executarAgente);
 
 app.listen(PORT, () => {
   console.log(`🚀 Agente Superpowers rodando na porta ${PORT}`);
