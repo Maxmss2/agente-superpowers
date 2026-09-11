@@ -8,294 +8,239 @@
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      font-family: Arial, sans-serif;
       background: #0b1020;
-      color: #ffffff;
+      color: #fff;
       min-height: 100vh;
     }
 
     header {
-      background: linear-gradient(135deg, #111936, #18265a);
       padding: 25px 20px;
       text-align: center;
-      border-bottom: 1px solid #2d3b73;
+      background: linear-gradient(135deg, #111936, #18265a);
+      border-bottom: 1px solid #29376e;
     }
 
     header h1 {
+      margin: 0 0 8px;
       font-size: 28px;
-      margin-bottom: 8px;
     }
 
     header p {
-      color: #aeb9df;
-      font-size: 14px;
+      margin: 0;
+      color: #b9c4ee;
     }
 
-    .container {
+    main {
       width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 25px 15px;
+      max-width: 800px;
+      margin: 35px auto;
+      padding: 0 20px;
     }
 
     .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #121a32;
-      border: 1px solid #26345f;
+      background: #111936;
+      border: 1px solid #29376e;
       border-radius: 12px;
       padding: 14px;
       margin-bottom: 20px;
-      font-size: 14px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #22c55e;
-    }
-
-    .card {
-      background: #11182d;
-      border: 1px solid #26345f;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: #dbe4ff;
+      text-align: center;
+      color: #9fffae;
     }
 
     textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: 180px;
       resize: vertical;
-      border: 1px solid #344577;
+      padding: 18px;
       border-radius: 12px;
-      background: #080d1b;
-      color: #ffffff;
-      padding: 15px;
+      border: 1px solid #35457f;
+      background: #080d1c;
+      color: white;
       font-size: 16px;
       outline: none;
     }
 
     textarea:focus {
-      border-color: #6b8cff;
-      box-shadow: 0 0 0 2px rgba(107,140,255,.15);
+      border-color: #667cff;
     }
 
     button {
       width: 100%;
       margin-top: 15px;
-      padding: 15px;
-      border: none;
+      padding: 16px;
+      border: 0;
       border-radius: 12px;
-      background: linear-gradient(135deg, #4f6fff, #7c4dff);
+      background: linear-gradient(135deg, #5865f2, #7c4dff);
       color: white;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: .92;
-    }
-
     button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
+      opacity: 0.6;
+      cursor: wait;
     }
 
-    .response {
-      margin-top: 20px;
-      background: #080d1b;
-      border: 1px solid #26345f;
+    .resultado {
+      margin-top: 25px;
+      padding: 20px;
       border-radius: 12px;
-      padding: 15px;
-      min-height: 100px;
+      background: #111936;
+      border: 1px solid #29376e;
       white-space: pre-wrap;
       line-height: 1.6;
-      color: #dbe4ff;
+      min-height: 80px;
     }
 
-    .thinking {
-      color: #9eafff;
-    }
-
-    .error {
-      color: #ff8d8d;
-    }
-
-    .success {
-      color: #8ff0ae;
-    }
-
-    .footer {
-      text-align: center;
-      color: #68759d;
-      font-size: 12px;
-      margin-top: 20px;
+    .erro {
+      color: #ff8f8f;
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🚀 Agente Superpowers IA</h1>
-  <p>Seu assistente inteligente conectado ao Gemini</p>
-</header>
+  <header>
+    <h1>🚀 Agente Superpowers IA</h1>
+    <p>Seu assistente inteligente conectado ao Gemini</p>
+  </header>
 
-<div class="container">
+  <main>
 
-  <div class="status">
-    <span class="dot"></span>
-    <span id="statusText">Agente online — pronto para receber comandos</span>
-  </div>
-
-  <div class="card">
-
-    <label for="command">
-      🤖 O que você quer que o Agente Superpowers faça?
-    </label>
+    <div class="status" id="status">
+      🔄 Verificando conexão com o agente...
+    </div>
 
     <textarea
-      id="command"
-      placeholder="Exemplo: Crie uma ideia completa para um aplicativo de vendas..."
+      id="comando"
+      placeholder="🤖 O que você quer que o Agente Superpowers faça?"
     ></textarea>
 
-    <button id="sendButton" onclick="sendCommand()">
+    <button id="enviar">
       🚀 Enviar comando
     </button>
 
-    <div id="response" class="response">
-      A resposta do Gemini aparecerá aqui.
+    <div class="resultado" id="resultado">
+      O resultado do agente aparecerá aqui.
     </div>
 
-  </div>
+  </main>
 
-  <div class="footer">
-    Agente Superpowers • Backend protegido no Railway
-  </div>
+  <script>
+    // ENDEREÇO DO SEU BACKEND NO RAILWAY
+    const API_URL = "https://agente-superpowers-production.up.railway.app";
 
-</div>
+    const comando = document.getElementById("comando");
+    const enviar = document.getElementById("enviar");
+    const resultado = document.getElementById("resultado");
+    const status = document.getElementById("status");
 
-<script>
-  // URL DO SEU BACKEND RAILWAY
-  const API_URL = "https://agente-superpowers-production.up.railway.app";
+    // Testa se o backend está online
+    async function verificarServidor() {
+      try {
+        const resposta = await fetch(API_URL);
 
-  const commandInput = document.getElementById("command");
-  const responseBox = document.getElementById("response");
-  const sendButton = document.getElementById("sendButton");
-  const statusText = document.getElementById("statusText");
+        if (!resposta.ok) {
+          throw new Error("Servidor respondeu com erro " + resposta.status);
+        }
 
-  async function sendCommand() {
+        const dados = await resposta.json();
 
-    const command = commandInput.value.trim();
+        if (dados.status === "online") {
+          status.innerHTML = "🟢 Agente online e conectado ao Gemini";
+        } else {
+          status.innerHTML = "🟡 Servidor online, mas resposta inesperada";
+        }
 
-    if (!command) {
-      responseBox.className = "response error";
-      responseBox.textContent = "⚠️ Digite um comando primeiro.";
-      return;
+      } catch (erro) {
+        console.error(erro);
+        status.innerHTML = "🔴 Não foi possível conectar ao agente";
+      }
     }
 
-    sendButton.disabled = true;
-    sendButton.textContent = "⏳ Processando...";
+    async function enviarComando() {
 
-    responseBox.className = "response thinking";
-    responseBox.textContent = "🤖 O Agente Superpowers está pensando...";
+      const texto = comando.value.trim();
 
-    statusText.textContent = "Processando seu comando...";
+      if (!texto) {
+        resultado.innerHTML = "⚠️ Digite um comando primeiro.";
+        return;
+      }
 
-    try {
-
-      const response = await fetch(API_URL + "/api/chat", {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          message: command
-        })
-      });
-
-      let data;
+      enviar.disabled = true;
+      enviar.innerText = "⏳ Processando...";
+      resultado.className = "resultado";
+      resultado.innerText = "🤖 O Agente Superpowers está pensando...";
 
       try {
-        data = await response.json();
-      } catch {
-        throw new Error(
-          "O servidor respondeu, mas não enviou uma resposta válida."
-        );
+
+        const resposta = await fetch(API_URL + "/chat", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            prompt: texto
+          })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(
+            dados.error ||
+            dados.message ||
+            "Erro HTTP " + resposta.status
+          );
+        }
+
+        // Aceita diferentes formatos de resposta do backend
+        const textoResposta =
+          dados.resposta ||
+          dados.response ||
+          dados.text ||
+          dados.message ||
+          dados.output;
+
+        if (!textoResposta) {
+          throw new Error("O servidor respondeu, mas não enviou uma resposta válida.");
+        }
+
+        resultado.innerText = textoResposta;
+
+      } catch (erro) {
+
+        console.error("Erro:", erro);
+
+        resultado.className = "resultado erro";
+
+        resultado.innerText =
+          "❌ Erro na comunicação com o agente.\n\n" +
+          "Detalhes: " + erro.message;
       }
 
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          data.message ||
-          "O servidor encontrou um erro."
-        );
-      }
-
-      const answer =
-        data.response ||
-        data.text ||
-        data.message ||
-        data.result;
-
-      if (!answer) {
-        throw new Error(
-          "O Gemini respondeu, mas o servidor não retornou o texto esperado."
-        );
-      }
-
-      responseBox.className = "response success";
-      responseBox.textContent = answer;
-
-      statusText.textContent = "Agente online — comando concluído";
-
-    } catch (error) {
-
-      console.error(error);
-
-      responseBox.className = "response error";
-
-      responseBox.textContent =
-        "❌ Não foi possível processar o comando.\n\n" +
-        "Detalhes: " + error.message;
-
-      statusText.textContent = "Erro na comunicação com o agente";
-
-    } finally {
-
-      sendButton.disabled = false;
-      sendButton.textContent = "🚀 Enviar comando";
-    }
-  }
-
-  // Permite enviar com Ctrl + Enter
-  commandInput.addEventListener("keydown", function(event) {
-
-    if (event.ctrlKey && event.key === "Enter") {
-      sendCommand();
+      enviar.disabled = false;
+      enviar.innerText = "🚀 Enviar comando";
     }
 
-  });
-</script>
+    enviar.addEventListener("click", enviarComando);
+
+    comando.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && event.ctrlKey) {
+        enviarComando();
+      }
+    });
+
+    verificarServidor();
+  </script>
 
 </body>
 </html>
