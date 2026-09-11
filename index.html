@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Agente Superpowers IA</title>
 
   <style>
@@ -12,14 +13,14 @@
 
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
       background: #0b1020;
-      color: #fff;
-      min-height: 100vh;
+      color: white;
     }
 
     header {
-      padding: 25px 20px;
+      padding: 28px 20px;
       text-align: center;
       background: linear-gradient(135deg, #111936, #18265a);
       border-bottom: 1px solid #29376e;
@@ -37,45 +38,59 @@
 
     main {
       width: 100%;
-      max-width: 800px;
-      margin: 35px auto;
+      max-width: 850px;
+      margin: 30px auto;
       padding: 0 20px;
     }
 
-    .status {
+    .card {
       background: #111936;
       border: 1px solid #29376e;
-      border-radius: 12px;
-      padding: 14px;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+
+    .status {
+      padding: 12px 15px;
       margin-bottom: 20px;
-      text-align: center;
-      color: #9fffae;
+      border-radius: 10px;
+      background: #0b1020;
+      color: #9ee7b0;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #dce2ff;
+      font-weight: bold;
     }
 
     textarea {
       width: 100%;
-      min-height: 180px;
+      min-height: 150px;
       resize: vertical;
-      padding: 18px;
+      padding: 15px;
       border-radius: 12px;
-      border: 1px solid #35457f;
-      background: #080d1c;
+      border: 1px solid #354477;
+      background: #080d1b;
       color: white;
       font-size: 16px;
       outline: none;
     }
 
     textarea:focus {
-      border-color: #667cff;
+      border-color: #6d8cff;
     }
 
     button {
       width: 100%;
       margin-top: 15px;
-      padding: 16px;
+      padding: 15px;
       border: 0;
       border-radius: 12px;
-      background: linear-gradient(135deg, #5865f2, #7c4dff);
+      background: linear-gradient(135deg, #526dff, #7657ff);
       color: white;
       font-size: 17px;
       font-weight: bold;
@@ -83,104 +98,148 @@
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: .6;
       cursor: wait;
     }
 
     .resultado {
       margin-top: 25px;
-      padding: 20px;
+      padding: 18px;
       border-radius: 12px;
-      background: #111936;
+      background: #080d1b;
       border: 1px solid #29376e;
       white-space: pre-wrap;
       line-height: 1.6;
-      min-height: 80px;
+      display: none;
     }
 
     .erro {
-      color: #ff8f8f;
+      color: #ff9d9d;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #7f8bb8;
+      font-size: 13px;
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>🚀 Agente Superpowers IA</h1>
-    <p>Seu assistente inteligente conectado ao Gemini</p>
-  </header>
+<header>
+  <h1>🚀 Agente Superpowers IA</h1>
+  <p>Seu assistente inteligente conectado ao Gemini</p>
+</header>
 
-  <main>
+<main>
+
+  <div class="card">
 
     <div class="status" id="status">
-      🔄 Verificando conexão com o agente...
+      🟡 Verificando conexão com o agente...
     </div>
 
-    <textarea
-      id="comando"
-      placeholder="🤖 O que você quer que o Agente Superpowers faça?"
-    ></textarea>
+    <label for="prompt">
+      🤖 O que você quer que o Agente Superpowers faça?
+    </label>
 
-    <button id="enviar">
+    <textarea
+      id="prompt"
+      placeholder="Digite seu comando aqui..."
+    >Olá, Agente Superpowers! Diga quem você é e confirme que está conectado ao Gemini.</textarea>
+
+    <button id="btn" onclick="enviarComando()">
       🚀 Enviar comando
     </button>
 
-    <div class="resultado" id="resultado">
-      O resultado do agente aparecerá aqui.
-    </div>
+    <div id="resultado" class="resultado"></div>
 
-  </main>
+  </div>
 
-  <script>
-    // ENDEREÇO DO SEU BACKEND NO RAILWAY
-    const API_URL = "https://agente-superpowers-production.up.railway.app";
+</main>
 
-    const comando = document.getElementById("comando");
-    const enviar = document.getElementById("enviar");
-    const resultado = document.getElementById("resultado");
+<footer>
+  Agente Superpowers IA • Powered by Gemini
+</footer>
+
+<script>
+
+  // URL OFICIAL DO BACKEND NO RAILWAY
+  const BACKEND_URL =
+    "https://agente-superpowers-production.up.railway.app";
+
+  // Verifica se o backend está online
+  async function verificarServidor() {
+
     const status = document.getElementById("status");
 
-    // Testa se o backend está online
-    async function verificarServidor() {
-      try {
-        const resposta = await fetch(API_URL);
+    try {
 
-        if (!resposta.ok) {
-          throw new Error("Servidor respondeu com erro " + resposta.status);
-        }
+      const resposta = await fetch(BACKEND_URL + "/", {
+        method: "GET"
+      });
 
-        const dados = await resposta.json();
+      const dados = await resposta.json();
 
-        if (dados.status === "online") {
-          status.innerHTML = "🟢 Agente online e conectado ao Gemini";
+      if (dados.status === "online") {
+
+        if (dados.gemini) {
+          status.innerHTML =
+            "🟢 Agente online • Gemini conectado";
         } else {
-          status.innerHTML = "🟡 Servidor online, mas resposta inesperada";
+          status.innerHTML =
+            "🟡 Agente online • GEMINI_API_KEY não encontrada";
         }
 
-      } catch (erro) {
-        console.error(erro);
-        status.innerHTML = "🔴 Não foi possível conectar ao agente";
+      } else {
+
+        status.innerHTML =
+          "🔴 O servidor respondeu de forma inesperada";
       }
+
+    } catch (erro) {
+
+      status.innerHTML =
+        "🔴 Não foi possível conectar ao backend";
+    }
+  }
+
+  // Envia comando para o Gemini
+  async function enviarComando() {
+
+    const prompt =
+      document.getElementById("prompt").value.trim();
+
+    const resultado =
+      document.getElementById("resultado");
+
+    const botao =
+      document.getElementById("btn");
+
+    if (!prompt) {
+
+      resultado.style.display = "block";
+      resultado.innerHTML =
+        "⚠️ Digite um comando primeiro.";
+
+      return;
     }
 
-    async function enviarComando() {
+    botao.disabled = true;
+    botao.innerText = "⏳ Processando...";
 
-      const texto = comando.value.trim();
+    resultado.style.display = "block";
+    resultado.className = "resultado";
+    resultado.innerText =
+      "🤖 Agente Superpowers está pensando...";
 
-      if (!texto) {
-        resultado.innerHTML = "⚠️ Digite um comando primeiro.";
-        return;
-      }
+    try {
 
-      enviar.disabled = true;
-      enviar.innerText = "⏳ Processando...";
-      resultado.className = "resultado";
-      resultado.innerText = "🤖 O Agente Superpowers está pensando...";
-
-      try {
-
-        const resposta = await fetch(API_URL + "/chat", {
+      const resposta = await fetch(
+        BACKEND_URL + "/api/chat",
+        {
           method: "POST",
 
           headers: {
@@ -188,59 +247,59 @@
           },
 
           body: JSON.stringify({
-            prompt: texto
+            prompt: prompt
           })
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(
-            dados.error ||
-            dados.message ||
-            "Erro HTTP " + resposta.status
-          );
         }
+      );
 
-        // Aceita diferentes formatos de resposta do backend
-        const textoResposta =
-          dados.resposta ||
-          dados.response ||
-          dados.text ||
-          dados.message ||
-          dados.output;
+      // Primeiro recebemos como texto.
+      // Isso evita que um HTML inesperado quebre o JSON.
+      const texto = await resposta.text();
 
-        if (!textoResposta) {
-          throw new Error("O servidor respondeu, mas não enviou uma resposta válida.");
-        }
+      let dados;
 
-        resultado.innerText = textoResposta;
+      try {
+        dados = JSON.parse(texto);
+      } catch (erroJson) {
 
-      } catch (erro) {
-
-        console.error("Erro:", erro);
-
-        resultado.className = "resultado erro";
-
-        resultado.innerText =
-          "❌ Erro na comunicação com o agente.\n\n" +
-          "Detalhes: " + erro.message;
+        throw new Error(
+          "O servidor retornou conteúdo que não é JSON. " +
+          "Verifique se o Railway terminou o deploy."
+        );
       }
 
-      enviar.disabled = false;
-      enviar.innerText = "🚀 Enviar comando";
+      if (!resposta.ok || !dados.success) {
+
+        throw new Error(
+          dados.error ||
+          "O servidor retornou um erro."
+        );
+      }
+
+      resultado.innerText =
+        "🤖 Agente Superpowers:\n\n" +
+        dados.response;
+
+    } catch (erro) {
+
+      resultado.className =
+        "resultado erro";
+
+      resultado.innerText =
+        "❌ Erro na comunicação com o agente.\n\n" +
+        "Detalhes: " +
+        erro.message;
+
+    } finally {
+
+      botao.disabled = false;
+      botao.innerText = "🚀 Enviar comando";
     }
+  }
 
-    enviar.addEventListener("click", enviarComando);
+  verificarServidor();
 
-    comando.addEventListener("keydown", function(event) {
-      if (event.key === "Enter" && event.ctrlKey) {
-        enviarComando();
-      }
-    });
-
-    verificarServidor();
-  </script>
+</script>
 
 </body>
 </html>
