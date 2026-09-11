@@ -128,6 +128,8 @@
       border-radius: 10px;
       color: #cbd5ff;
       line-height: 1.6;
+      white-space: normal;
+      word-wrap: break-word;
     }
 
     .status {
@@ -158,8 +160,10 @@
     <section class="box">
       <h2>🤖 O que você quer que a IA faça?</h2>
 
-      <textarea id="comando"
-        placeholder="Digite uma tarefa...&#10;&#10;Exemplo: Crie uma ideia de negócio online e monte um plano para executá-la."></textarea>
+      <textarea
+        id="comando"
+        placeholder="Digite uma tarefa...&#10;&#10;Exemplo: Crie uma ideia de negócio online e monte um plano para executá-la."
+      ></textarea>
 
       <button onclick="executar()">
         🚀 EXECUTAR COM SUPERPODERES
@@ -223,27 +227,59 @@
   </footer>
 
   <script>
-    function executar() {
+    async function executar() {
       const comando = document.getElementById("comando").value.trim();
       const resultado = document.getElementById("resultado");
 
       if (!comando) {
         resultado.style.display = "block";
-        resultado.innerHTML = "⚠️ Digite primeiro o que você quer que o agente faça.";
+        resultado.innerHTML =
+          "⚠️ Digite primeiro o que você quer que o agente faça.";
         return;
       }
 
       resultado.style.display = "block";
-
       resultado.innerHTML =
-        "<strong>🚀 Comando recebido!</strong><br><br>" +
-        "Sua solicitação foi registrada:<br><br>" +
-        "<em>" + escapar(comando) + "</em><br><br>" +
-        "⚙️ O próximo passo será conectar este painel ao motor de IA para executar a tarefa automaticamente.";
+        "🤖 <strong>Agente pensando...</strong><br><br>" +
+        "⏳ Processando seu comando...";
+
+      try {
+        const resposta = await fetch(
+          "URL_DO_BACKEND/api/agent",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              command: comando
+            })
+          }
+        );
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(
+            dados.error || "Erro ao executar o agente."
+          );
+        }
+
+        resultado.innerHTML =
+          "<strong>🤖 Resposta do Agente:</strong><br><br>" +
+          escapar(dados.response).replace(/\n/g, "<br>");
+
+      } catch (erro) {
+        resultado.innerHTML =
+          "❌ <strong>Erro ao conectar com o agente.</strong><br><br>" +
+          escapar(erro.message) +
+          "<br><br>" +
+          "⚙️ O backend ainda precisa ser conectado.";
+      }
     }
 
     function escapar(texto) {
-      return texto
+      return String(texto)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
