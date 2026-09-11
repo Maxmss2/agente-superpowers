@@ -9,95 +9,68 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// A chave fica somente no ambiente do servidor.
-// NUNCA coloque a chave diretamente neste arquivo.
+// A chave permanece SOMENTE no Railway
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
-// Teste básico do servidor
+// Teste do servidor
 app.get("/", (req, res) => {
   res.json({
     status: "online",
-    agent: "Agente Superpowers",
+    agente: "Agente Superpowers IA",
     gemini: !!process.env.GEMINI_API_KEY
   });
 });
 
-// Verificação de saúde
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    gemini: !!process.env.GEMINI_API_KEY
-  });
-});
-
-// Endpoint principal do Agente Superpowers
-app.post("/api/agent", async (req, res) => {
+// Endpoint do agente
+app.post("/api/gemini", async (req, res) => {
   try {
-    const command = req.body?.command;
+    const { prompt } = req.body;
 
-    if (!command || !command.trim()) {
+    if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({
         success: false,
-        error: "Nenhum comando foi informado."
+        error: "Nenhum comando foi enviado."
       });
     }
 
-    const prompt = `
-Você é o Agente Superpowers, um assistente de inteligência
-artificial criado para ajudar o usuário a transformar ideias
-em ações práticas.
-
-Sua função é:
-
-- analisar problemas;
-- criar soluções;
-- escrever e revisar código;
-- explicar assuntos de forma simples;
-- criar planos passo a passo;
-- ajudar em projetos;
-- organizar informações;
-- sugerir automações;
-- executar raciocínio antes de responder.
-
-Responda sempre em português do Brasil.
-
-Se o usuário pedir código, forneça código completo quando
-isso for mais útil.
-
-Se a tarefa tiver várias etapas, organize a resposta em
-passos claros.
-
-Comando do usuário:
-
-${command}
-`;
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        error: "GEMINI_API_KEY não está configurada no Railway."
+      });
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt
     });
 
-    res.json({
+    const text = response.text;
+
+    if (!text) {
+      return res.status(500).json({
+        success: false,
+        error: "O Gemini não retornou texto."
+      });
+    }
+
+    return res.json({
       success: true,
-      command: command,
-      response: response.text
+      response: text
     });
 
   } catch (error) {
-    console.error("Erro Gemini:", error);
+    console.error("ERRO GEMINI:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      error: "Não foi possível executar o comando.",
-      details: error.message
+      error: error?.message || "Erro desconhecido ao comunicar com o Gemini."
     });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(
-    `Agente Superpowers rodando na porta ${PORT}`
-  );
+  console.log(`🚀 Agente Superpowers rodando na porta ${PORT}`);
 });
