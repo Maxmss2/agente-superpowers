@@ -1,13 +1,12 @@
 {
-  "name": "agente-superpowers-backend",
+  "name": "agente-superpowers",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "@google/genai": "^1.0.0",
+    "@google/genai": "^1.15.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
   }
