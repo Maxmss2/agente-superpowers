@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Agente Superpowers IA</title>
+
+  <!-- Renderizador de Markdown e Highlights de Código -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
     * {
@@ -69,7 +73,7 @@
 
     textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: 120px;
       resize: vertical;
       padding: 15px;
       border-radius: 12px;
@@ -95,6 +99,11 @@
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
     }
 
     button:disabled {
@@ -102,19 +111,37 @@
       cursor: wait;
     }
 
-    .resultado {
+    /* Histórico de Conversa */
+    .chat-container {
       margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .msg {
       padding: 18px;
       border-radius: 12px;
       background: #080d1b;
       border: 1px solid #29376e;
-      white-space: pre-wrap;
       line-height: 1.6;
-      display: none;
     }
 
-    .erro {
+    .msg.user {
+      border-color: #526dff;
+      background: #131d3d;
+    }
+
+    .msg.erro {
+      border-color: #ff5555;
       color: #ff9d9d;
+    }
+
+    .msg pre {
+      background: #000;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
     }
 
     footer {
@@ -134,7 +161,6 @@
 </header>
 
 <main>
-
   <div class="card">
 
     <div class="status" id="status">
@@ -147,17 +173,16 @@
 
     <textarea
       id="prompt"
-      placeholder="Digite seu comando aqui..."
+      placeholder="Digite seu comando aqui... (Ctrl + Enter para enviar)"
     >Olá, Agente Superpowers! Diga quem você é e confirme que está conectado ao Gemini.</textarea>
 
     <button id="btn" onclick="enviarComando()">
       🚀 Enviar comando
     </button>
 
-    <div id="resultado" class="resultado"></div>
+    <div id="chatContainer" class="chat-container"></div>
 
   </div>
-
 </main>
 
 <footer>
@@ -165,140 +190,108 @@
 </footer>
 
 <script>
+  const BACKEND_URL = "https://agente-superpowers-production.up.railway.app";
 
-  // URL OFICIAL DO BACKEND NO RAILWAY
-  const BACKEND_URL =
-    "https://agente-superpowers-production.up.railway.app";
+  // Suporte a atalho Ctrl+Enter para envio rápido
+  document.getElementById("prompt").addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      enviarComando();
+    }
+  });
 
-  // Verifica se o backend está online
   async function verificarServidor() {
-
     const status = document.getElementById("status");
 
     try {
-
-      const resposta = await fetch(BACKEND_URL + "/", {
-        method: "GET"
-      });
-
+      const resposta = await fetch(BACKEND_URL + "/", { method: "GET" });
       const dados = await resposta.json();
 
       if (dados.status === "online") {
-
         if (dados.gemini) {
-          status.innerHTML =
-            "🟢 Agente online • Gemini conectado";
+          status.innerHTML = "🟢 Agente online • Gemini conectado";
         } else {
-          status.innerHTML =
-            "🟡 Agente online • GEMINI_API_KEY não encontrada";
+          status.innerHTML = "🟡 Agente online • GEMINI_API_KEY não encontrada";
         }
-
       } else {
-
-        status.innerHTML =
-          "🔴 O servidor respondeu de forma inesperada";
+        status.innerHTML = "🔴 O servidor respondeu de forma inesperada";
       }
-
     } catch (erro) {
-
-      status.innerHTML =
-        "🔴 Não foi possível conectar ao backend";
+      status.innerHTML = "🔴 Não foi possível conectar ao backend";
     }
   }
 
-  // Envia comando para o Gemini
   async function enviarComando() {
-
-    const prompt =
-      document.getElementById("prompt").value.trim();
-
-    const resultado =
-      document.getElementById("resultado");
-
-    const botao =
-      document.getElementById("btn");
+    const promptInput = document.getElementById("prompt");
+    const prompt = promptInput.value.trim();
+    const chatContainer = document.getElementById("chatContainer");
+    const botao = document.getElementById("btn");
 
     if (!prompt) {
-
-      resultado.style.display = "block";
-      resultado.innerHTML =
-        "⚠️ Digite um comando primeiro.";
-
+      alert("⚠️ Digite um comando primeiro.");
       return;
     }
 
+    // Adiciona pergunta do usuário ao histórico
+    const userMsgDiv = document.createElement("div");
+    userMsgDiv.className = "msg user";
+    userMsgDiv.innerHTML = `<strong>👤 Você:</strong><br>${prompt}`;
+    chatContainer.appendChild(userMsgDiv);
+
+    // Div temporária de carregamento da IA
+    const aiMsgDiv = document.createElement("div");
+    aiMsgDiv.className = "msg";
+    aiMsgDiv.innerHTML = "🤖 <em>Agente Superpowers está pensando...</em>";
+    chatContainer.appendChild(aiMsgDiv);
+
+    // Scroll para a última mensagem
+    aiMsgDiv.scrollIntoView({ behavior: 'smooth' });
+
+    // Prepara interface para carregamento
     botao.disabled = true;
     botao.innerText = "⏳ Processando...";
-
-    resultado.style.display = "block";
-    resultado.className = "resultado";
-    resultado.innerText =
-      "🤖 Agente Superpowers está pensando...";
+    promptInput.value = "";
 
     try {
+      const resposta = await fetch(BACKEND_URL + "/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+      });
 
-      const resposta = await fetch(
-        BACKEND_URL + "/api/chat",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            prompt: prompt
-          })
-        }
-      );
-
-      // Primeiro recebemos como texto.
-      // Isso evita que um HTML inesperado quebre o JSON.
       const texto = await resposta.text();
-
       let dados;
 
       try {
         dados = JSON.parse(texto);
       } catch (erroJson) {
-
-        throw new Error(
-          "O servidor retornou conteúdo que não é JSON. " +
-          "Verifique se o Railway terminou o deploy."
-        );
+        throw new Error("O servidor retornou conteúdo inválido (não é JSON). Verifique se o deploy finalizou.");
       }
 
       if (!resposta.ok || !dados.success) {
-
-        throw new Error(
-          dados.error ||
-          "O servidor retornou um erro."
-        );
+        throw new Error(dados.error || "O servidor retornou um erro.");
       }
 
-      resultado.innerText =
-        "🤖 Agente Superpowers:\n\n" +
-        dados.response;
+      // Converte Markdown em HTML formatado
+      const markdownFormatado = marked.parse(dados.response);
+
+      aiMsgDiv.innerHTML = `<strong>🤖 Agente Superpowers:</strong><br>${markdownFormatado}`;
+
+      // Aplica destaque de sintaxe em blocos de código
+      aiMsgDiv.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+      });
 
     } catch (erro) {
-
-      resultado.className =
-        "resultado erro";
-
-      resultado.innerText =
-        "❌ Erro na comunicação com o agente.\n\n" +
-        "Detalhes: " +
-        erro.message;
-
+      aiMsgDiv.className = "msg erro";
+      aiMsgDiv.innerHTML = `❌ <strong>Erro na comunicação:</strong><br>${erro.message}`;
     } finally {
-
       botao.disabled = false;
       botao.innerText = "🚀 Enviar comando";
+      aiMsgDiv.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   verificarServidor();
-
 </script>
 
 </body>
